@@ -1,0 +1,146 @@
+name: Build & Release AppImage
+
+# ──────────────────────────────────────────────
+#  Trigger: Push auf main/master
+#  Tipp: Füge "tags: ['v*']" hinzu, um bei einem
+#        versionierten Tag ein offizielles Release
+#        zu erzeugen (statt eines Dev-Releases).
+# ──────────────────────────────────────────────
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-appimage:
+    name: Build AppImage (Ubuntu)
+    runs-on: ubuntu-22.04
+
+    permissions:
+      contents: write   # Wird benötigt, um ein GitHub Release anzulegen
+
+    steps:
+      # ── 1. Code auschecken ────────────────────────────────────────────
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # ── 2. Python einrichten ──────────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.3"      # ← Python-Version ggf. anpassen
+          cache: "pip"
+
+      # ── 3. Abhängigkeiten installieren ────────────────────────────────
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      # ── 4. System-Tools für AppImage installieren ─────────────────────
+      - name: Install AppImage build tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            wget \
+            libfuse2 \
+            desktop-file-utils \
+            libglib2.0-bin
+
+          # appimagetool herunterladen (läuft ohne FUSE dank --appimage-extract-and-run)
+          wget -q \
+            "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage" \
+            -O /usr/local/bin/appimagetool
+          chmod +x /usr/local/bin/appimagetool
+
+      # ── 5. App mit PyInstaller bauen ──────────────────────────────────
+      #  ANPASSEN: --name und das Einstiegsskript (main.py) entsprechend
+      #            deinem Projekt setzen.
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller \
+            --onedir \
+            --name "SysDevTool" \
+            main.py               # ← Einstiegsskript anpassen
+
+      # ── 6. AppDir-Struktur erstellen ──────────────────────────────────
+      - name: Create AppDir structure
+        run: |
+          APP_NAME="SysDevTool"         # ← App-Name anpassen (muss mit PyInstaller übereinstimmen)
+          APP_ID="sysdevtool"           # ← Kleinbuchstaben-ID (für .desktop & Icon)
+
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/share/applications
+          mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
+
+          # PyInstaller-Output kopieren
+          cp -r "dist/${APP_NAME}/." AppDir/usr/bin/
+
+          # .desktop-Datei erstellen
+          cat > "AppDir/usr/share/applications/${APP_ID}.desktop" << EOF
+          [Desktop Entry]
+          Name=${APP_NAME}
+          Exec=${APP_NAME}
+          Icon=${APP_ID}
+          Type=Application
+          Categories=Utility;
+          Comment=Built with PyInstaller & AppImageKit
+          EOF
+
+          # Icon einbinden – lege eine icon.png ins Repository und passe den Pfad an.
+          # Ohne Icon bricht appimagetool ab → Platzhalter-Icon erzeugen:
+          if [ -f "icon.png" ]; then
+            cp icon.png "AppDir/usr/share/icons/hicolor/256x256/apps/${APP_ID}.png"
+          else
+            # Minimales 1×1-Pixel-PNG als Fallback
+            printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82' \
+              > "AppDir/usr/share/icons/hicolor/256x256/apps/${APP_ID}.png"
+          fi
+
+          # AppRun-Einstiegspunkt erstellen
+          cat > AppDir/AppRun << APPRUN
+          #!/bin/bash
+          HERE="\$(dirname "\$(readlink -f "\${0}")")"
+          exec "\${HERE}/usr/bin/${APP_NAME}" "\$@"
+          APPRUN
+          chmod +x AppDir/AppRun
+
+          # Pflicht-Symlinks im AppDir-Root
+          ln -sf "usr/share/applications/${APP_ID}.desktop" "AppDir/${APP_ID}.desktop"
+          ln -sf "usr/share/icons/hicolor/256x256/apps/${APP_ID}.png" "AppDir/${APP_ID}.png"
+
+      # ── 7. AppImage bauen ─────────────────────────────────────────────
+      - name: Build AppImage
+        run: |
+          ARCH=x86_64 appimagetool \
+            --appimage-extract-and-run \
+            AppDir \
+            SysDevTool-x86_64.AppImage    # ← Ausgabedateiname ggf. anpassen
+
+      # ── 8. Version / Release-Tag bestimmen ───────────────────────────
+      - name: Determine release tag
+        id: version
+        run: |
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "tag=dev-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "name=Dev Build (${SHORT_SHA})" >> "$GITHUB_OUTPUT"
+
+      # ── 9. GitHub Release anlegen & AppImage hochladen ───────────────
+      #  Bei einem Push auf main wird ein Pre-Release ("dev-<sha>") erzeugt.
+      #  Für offizielle Releases: Workflow mit "tags: ['v*']" ergänzen und
+      #  prerelease auf false setzen, wenn github.ref mit 'refs/tags/' beginnt.
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.name }}
+          body: |
+            Automatisch erzeugter Dev-Build aus Branch `${{ github.ref_name }}`.
+            Commit: ${{ github.sha }}
+          prerelease: true
+          files: SysDevTool-x86_64.AppImage
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
