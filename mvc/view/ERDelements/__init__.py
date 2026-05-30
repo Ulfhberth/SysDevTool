@@ -1,3 +1,4 @@
-from .entity_canvas_entity import EntityCanvasEntity
+from .erd_canvas_entity import ERDCanvasEntity
+from .erd_canvas_relationship import ERDCanvasRelationship
 
-__all__ = ["EntityCanvasEntity"]
+__all__ = ["ERDCanvasEntity", "ERDCanvasRelationship"]

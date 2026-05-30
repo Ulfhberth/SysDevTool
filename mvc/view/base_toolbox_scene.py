@@ -11,7 +11,7 @@ from __future__ import annotations
 from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QGraphicsItem, QGraphicsScene
 
-_BACKGROUND_COLOR = QColor(45, 45, 45)
+_BACKGROUND_COLOR = QColor(0x1A, 0x4D, 0x4E)
 
 
 class BaseToolboxScene(QGraphicsScene):

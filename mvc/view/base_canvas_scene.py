@@ -13,7 +13,7 @@ from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QGraphicsScene
 
 _DEFAULT_SCENE_RECT = QRectF(-5000, -5000, 10000, 10000)
-_BACKGROUND_COLOR = QColor(105, 105, 105)
+_BACKGROUND_COLOR = QColor(0x24, 0x68, 0x69)
 
 
 class BaseCanvasScene(QGraphicsScene):
