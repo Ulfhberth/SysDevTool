@@ -6,10 +6,24 @@ Verantwortlichkeiten:
   - Weiterleitung von Nutzerinteraktionen an den Controller via Signale
 """
 
+from __future__ import annotations
+
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtWidgets import QMainWindow, QStatusBar, QWidget
+from PyQt6.QtWidgets import (
+    QFrame,
+    QHBoxLayout,
+    QMainWindow,
+    QSizePolicy,
+    QStatusBar,
+    QWidget,
+)
+
+if TYPE_CHECKING:
+    from .canvas import BaseCanvas
+    from .toolbox import BaseToolbox
 
 
 class BaseView(QMainWindow):
@@ -37,6 +51,34 @@ class BaseView(QMainWindow):
         super().__init__(parent)
         self._status_bar = QStatusBar()
         self.setStatusBar(self._status_bar)
+
+    # ------------------------------------------------------------------
+    # Layout-Hilfsmethode
+    # ------------------------------------------------------------------
+
+    def _build_split_layout(
+        self,
+        toolbox: BaseToolbox,
+        canvas: BaseCanvas,
+    ) -> None:
+        """Richtet das Zweispaltenlayout ein: Toolbox | Trennlinie | Canvas."""
+        container = QWidget()
+        layout = QHBoxLayout(container)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+
+        separator = QFrame()
+        separator.setFrameShape(QFrame.Shape.VLine)
+        separator.setFrameShadow(QFrame.Shadow.Sunken)
+        separator.setSizePolicy(
+            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding
+        )
+
+        layout.addWidget(toolbox)
+        layout.addWidget(separator)
+        layout.addWidget(canvas, stretch=1)
+
+        self.setCentralWidget(container)
 
     # ------------------------------------------------------------------
     # Öffentliche Hilfsmethoden

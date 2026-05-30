@@ -10,8 +10,8 @@ from abc import abstractmethod
 
 from PyQt6.QtCore import QObject
 
-from .model import BaseModel
-from .view import BaseView
+from ..model import BaseModel
+from ..view import BaseView
 
 
 class BaseController(QObject):

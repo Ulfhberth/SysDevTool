@@ -1,24 +1,48 @@
 """
-Einstiegspunkt — MVC-Framework-Demo mit PyQt6.
-
-Startet die Beispielanwendung (Task-Manager).
+Einstiegspunkt — MVC-Framework mit PyQt6.
 """
 
 import sys
 
 from PyQt6.QtWidgets import QApplication
 
-from mvc.example import TaskController, TaskModel, TaskView
+from mvc import BaseCanvas, BaseScene, BaseToolbox, BaseView
+from mvc.view.ERDelements import EntityCanvasEntity
+
+
+class Scene(BaseScene):
+    def setup_scene(self) -> None:
+        entity = EntityCanvasEntity(ID="1", name="Kunde", description="Ein Kunde")
+        self.addItem(entity)
+        entity.setPos(100, 100)
+
+    def on_reset(self) -> None:
+        self.clear()
+
+
+class View(BaseView):
+    def setup_ui(self) -> None:
+        toolbox = BaseToolbox()
+        canvas = BaseCanvas(Scene())
+        self._build_split_layout(toolbox, canvas)
+
+    def connect_signals(self) -> None:
+        pass
+
+    def refresh(self, _key: str, _value: object) -> None:
+        pass
+
+    def reset(self) -> None:
+        pass
 
 
 def main() -> None:
     app = QApplication(sys.argv)
 
-    model = TaskModel()
-    view = TaskView()
-    TaskController(model, view, parent=view)
+    view = View()
+    view.setup_ui()
+    view.showMaximized()
 
-    view.show()
     sys.exit(app.exec())
 
 

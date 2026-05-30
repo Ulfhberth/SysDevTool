@@ -1,3 +1,13 @@
-from .base import BaseModel, BaseView, BaseController
+from .controller import BaseController
+from .model import BaseModel
+from .view import BaseCanvas, BaseCanvasEntity, BaseScene, BaseToolbox, BaseView
 
-__all__ = ["BaseModel", "BaseView", "BaseController"]
+__all__ = [
+    "BaseModel",
+    "BaseView",
+    "BaseScene",
+    "BaseCanvas",
+    "BaseToolbox",
+    "BaseCanvasEntity",
+    "BaseController",
+]
