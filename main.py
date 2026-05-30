@@ -6,11 +6,11 @@ import sys
 
 from PyQt6.QtWidgets import QApplication
 
-from mvc import BaseCanvas, BaseScene, BaseToolbox, MainWindow
+from mvc import BaseCanvas, BaseCanvasScene, BaseToolbox, MainWindow
 from mvc.view.ERDelements import EntityCanvasEntity
 
 
-class Scene(BaseScene):
+class Scene(BaseCanvasScene):
     def setup_scene(self) -> None:
         entity = EntityCanvasEntity(ID="1", name="Kunde", description="Ein Kunde")
         self.addItem(entity)

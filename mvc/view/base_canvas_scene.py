@@ -1,5 +1,5 @@
 """
-BaseScene — generische Basisklasse für alle Szenen im MVC-Framework.
+BaseCanvasScene — generische Basisklasse für alle Szenen im MVC-Framework.
 
 Verantwortlichkeiten:
   - Verwaltung der grafischen Szenenobjekte (QGraphicsItem)
@@ -9,12 +9,14 @@ Verantwortlichkeiten:
 from abc import abstractmethod
 
 from PyQt6.QtCore import QRectF
+from PyQt6.QtGui import QColor
 from PyQt6.QtWidgets import QGraphicsScene
 
 _DEFAULT_SCENE_RECT = QRectF(-5000, -5000, 10000, 10000)
+_BACKGROUND_COLOR = QColor(105, 105, 105)
 
 
-class BaseScene(QGraphicsScene):
+class BaseCanvasScene(QGraphicsScene):
     """
     Abstrakte Basisklasse für Szenen.
 
@@ -24,6 +26,7 @@ class BaseScene(QGraphicsScene):
 
     def __init__(self, parent=None) -> None:
         super().__init__(_DEFAULT_SCENE_RECT, parent)
+        self.setBackgroundBrush(_BACKGROUND_COLOR)
         self.setup_scene()
 
     # ------------------------------------------------------------------

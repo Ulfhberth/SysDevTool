@@ -56,7 +56,6 @@ class BaseCanvas(QGraphicsView):
         self.setViewportUpdateMode(
             QGraphicsView.ViewportUpdateMode.MinimalViewportUpdate
         )
-        self.setBackgroundBrush(Qt.GlobalColor.darkGray)
 
     # ------------------------------------------------------------------
     # Öffentliche Methoden

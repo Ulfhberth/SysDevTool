@@ -1,7 +1,7 @@
-from mvc import BaseCanvas, BaseScene
+from mvc import BaseCanvas, BaseCanvasScene
 
 
-class _Scene(BaseScene):
+class _Scene(BaseCanvasScene):
     """Minimale konkrete Szene nur für Tests."""
 
     def setup_scene(self) -> None:

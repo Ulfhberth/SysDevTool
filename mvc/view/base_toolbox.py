@@ -8,7 +8,9 @@ Verantwortlichkeiten:
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPainter, QWheelEvent
-from PyQt6.QtWidgets import QGraphicsScene, QGraphicsView, QSizePolicy
+from PyQt6.QtWidgets import QGraphicsView, QSizePolicy
+
+from .base_toolbox_scene import BaseToolboxScene
 
 _DEFAULT_WIDTH = 220
 
@@ -17,13 +19,28 @@ class BaseToolbox(QGraphicsView):
     """
     Statischer Toolbox-Canvas für die linke Seitenleiste.
 
-    Nicht navigierbar, nicht zoombar. Konkrete Toolboxen befüllen
-    eine eigene QGraphicsScene und übergeben sie im Konstruktor.
+    Nicht navigierbar, nicht zoombar. Akzeptiert ausschließlich
+    BaseToolboxScene-Instanzen als Scene.
+
+    Fehler
+    ------
+    TypeError
+        Wenn eine Scene übergeben wird, die keine BaseToolboxScene ist.
     """
 
-    def __init__(self, scene: QGraphicsScene | None = None, parent=None) -> None:
+    def __init__(self, scene: BaseToolboxScene | None = None, parent=None) -> None:
+        if scene is None:
+            scene = BaseToolboxScene()
         super().__init__(scene, parent)
         self._setup()
+
+    def setScene(self, scene: BaseToolboxScene) -> None:
+        if not isinstance(scene, BaseToolboxScene):
+            raise TypeError(
+                f"BaseToolbox akzeptiert nur BaseToolboxScene-Instanzen. "
+                f"Übergeben: {type(scene).__name__}"
+            )
+        super().setScene(scene)
 
     # ------------------------------------------------------------------
     # Einrichtung
@@ -32,7 +49,6 @@ class BaseToolbox(QGraphicsView):
     def _setup(self) -> None:
         self.setFixedWidth(_DEFAULT_WIDTH)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
-        self.setBackgroundBrush(Qt.GlobalColor.darkGray)
         self.setRenderHints(
             QPainter.RenderHint.Antialiasing
             | QPainter.RenderHint.SmoothPixmapTransform
