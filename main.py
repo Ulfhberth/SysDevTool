@@ -6,7 +6,7 @@ import sys
 
 from PyQt6.QtWidgets import QApplication
 
-from mvc import BaseCanvas, BaseScene, BaseToolbox, BaseView
+from mvc import BaseCanvas, BaseScene, BaseToolbox, MainWindow
 from mvc.view.ERDelements import EntityCanvasEntity
 
 
@@ -20,7 +20,7 @@ class Scene(BaseScene):
         self.clear()
 
 
-class View(BaseView):
+class View(MainWindow):
     def setup_ui(self) -> None:
         toolbox = BaseToolbox()
         canvas = BaseCanvas(Scene())

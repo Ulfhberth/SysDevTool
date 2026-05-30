@@ -53,7 +53,7 @@ class BaseCanvasEntity(QGraphicsObject):
 
     @staticmethod
     def _assert_not_toolbox_scene(scene) -> None:
-        from .toolbox import BaseToolbox  # lokaler Import verhindert Zirkelimport
+        from .base_toolbox import BaseToolbox  # lokaler Import verhindert Zirkelimport
 
         for view in scene.views():
             if isinstance(view, BaseToolbox):

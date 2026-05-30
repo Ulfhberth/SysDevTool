@@ -1,5 +1,5 @@
 """
-BaseView — generische Basisklasse für alle Views im MVC-Framework.
+MainWindow — generische Basisklasse für alle Views im MVC-Framework.
 
 Verantwortlichkeiten:
   - Darstellung des Modell-Zustands
@@ -22,11 +22,11 @@ from PyQt6.QtWidgets import (
 )
 
 if TYPE_CHECKING:
-    from .canvas import BaseCanvas
-    from .toolbox import BaseToolbox
+    from .base_canvas import BaseCanvas
+    from .base_toolbox import BaseToolbox
 
 
-class BaseView(QMainWindow):
+class MainWindow(QMainWindow):
     """
     Abstrakte Basisklasse für Views.
 

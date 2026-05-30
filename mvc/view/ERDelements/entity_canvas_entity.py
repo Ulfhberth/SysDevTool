@@ -8,7 +8,7 @@ from PyQt6.QtCore import QRectF, Qt
 from PyQt6.QtGui import QBrush, QColor, QFont, QPainter, QPen
 from PyQt6.QtWidgets import QGraphicsObject, QStyleOptionGraphicsItem, QWidget
 
-from mvc.view.entity import BaseCanvasEntity
+from mvc.view.base_canvas_entity import BaseCanvasEntity
 
 _WIDTH = 160
 _HEIGHT = 80

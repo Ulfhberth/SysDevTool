@@ -1,7 +1,8 @@
-from .base import BaseView
-from .canvas import BaseCanvas
-from .entity import BaseCanvasEntity
-from .scene import BaseScene
-from .toolbox import BaseToolbox
+from .main_window import MainWindow
+from .base_canvas import BaseCanvas
+from .base_canvas_entity import BaseCanvasEntity
+from .base_canvas_relationship import BaseCanvasRelationship
+from .base_scene import BaseScene
+from .base_toolbox import BaseToolbox
 
-__all__ = ["BaseView", "BaseScene", "BaseCanvas", "BaseToolbox", "BaseCanvasEntity"]
+__all__ = ["MainWindow", "BaseScene", "BaseCanvas", "BaseToolbox", "BaseCanvasEntity", "BaseCanvasRelationship"]

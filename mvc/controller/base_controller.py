@@ -11,7 +11,7 @@ from abc import abstractmethod
 from PyQt6.QtCore import QObject
 
 from ..model import BaseModel
-from ..view import BaseView
+from ..view import MainWindow
 
 
 class BaseController(QObject):
@@ -31,7 +31,7 @@ class BaseController(QObject):
     def __init__(
         self,
         model: BaseModel,
-        view: BaseView,
+        view: MainWindow,
         parent: QObject | None = None,
     ) -> None:
         super().__init__(parent)

@@ -1,13 +1,14 @@
 from .controller import BaseController
 from .model import BaseModel
-from .view import BaseCanvas, BaseCanvasEntity, BaseScene, BaseToolbox, BaseView
+from .view import BaseCanvas, BaseCanvasEntity, BaseCanvasRelationship, BaseScene, BaseToolbox, MainWindow
 
 __all__ = [
     "BaseModel",
-    "BaseView",
+    "MainWindow",
     "BaseScene",
     "BaseCanvas",
     "BaseToolbox",
     "BaseCanvasEntity",
+    "BaseCanvasRelationship",
     "BaseController",
 ]
